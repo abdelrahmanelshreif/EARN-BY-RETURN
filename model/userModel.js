@@ -15,10 +15,10 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     validate: [validator.isEmail, 'Plase Provide a Valid Email']
   },
-  // phoneNumber: {
-  //   type: String,
-  //   required: [true, 'Please Enter Your Mobile Phone Number']
-  // },
+  phoneNumber: {
+    type: String,
+    required: [true, 'Please Enter Your Mobile Phone Number'],
+  },
   role: {
     type: String,
     enum: ['user', 'admin', 'merchant'],
@@ -43,7 +43,10 @@ const userSchema = new mongoose.Schema({
       }
     ]
   },
-  passwordChangedAt: Date,
+  passwordChangedAt: {
+    type: Date,
+    default: Date.now()-1
+  },
   passwordResetToken: String,
   passwordResetExpires: Date,
   active: {

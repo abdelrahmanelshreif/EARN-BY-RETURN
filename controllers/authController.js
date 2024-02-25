@@ -7,6 +7,7 @@ const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
 const catchAsync = require('../utils/catchAsync');
 
+
 const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -30,7 +31,6 @@ const createSendToken=(user,statusCode,res)=>{
     data:{
       user
     }
-    
   });
 } 
 
@@ -38,6 +38,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
+    phoneNumber: req.body.phoneNumber,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt,
@@ -129,11 +130,12 @@ exports.forgetPassword = catchAsync(async(req,res,next)=>{
   // 3) Send it to user's email 
   const resetURL = `${req.protocol}://${req.get(
     'host'
-    )}/api/v1/users/resetPassword/${resetToken}`;
+    )}/api/v1/user/resetPassword/${resetToken}`;
 
   const message = `Forget your password? sumbit a patch request with your new password and passwrodConfirm to : ${resetURL}
   \nIf you didn't forget your passwrod, please ignore this email!`;
 
+  
   try{
     await sendEmail({
       email: user.email, // req.body.email -- is the same actually
