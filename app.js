@@ -8,8 +8,9 @@ const hpp = require("hpp");
 const userRouter = require('./routes/userRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
+const compression = require("compression");
 
-
+  
 const app = express();
 
 // Set security HTTP headers
@@ -35,6 +36,14 @@ app.use(mongoSanitize());
 
 // Data Sanitization against XSS
 app.use(xss());
+
+app.use(compression())
+
+//TEST Middleware 
+app.use((req,res,next)=>{
+  req.requestTime = new Date().toISOString();
+  next();
+});
 
 // Routes
 app.use('/api/v1/user',userRouter);
