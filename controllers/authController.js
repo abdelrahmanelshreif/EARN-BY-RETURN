@@ -34,6 +34,24 @@ const createSendToken=(user,statusCode,res)=>{
   });
 } 
 
+exports.emailVerify =catchAsync(async(req,res,next)=>{
+  const message = `Welcome To Our Recycling System: ${req.body.name}\nWe Wanna You Use Our Best RVM Machine in MENA.`;
+  try {
+    await sendEmail({
+      email: req.body.email,
+      subject: 'WELCOME TO EARN BY RETURN',
+      message,
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Email is Valid',
+    });
+  } catch (err) {
+    return next(new AppError('Please Enter A Valid Email!', 500));
+  }
+});
+
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -158,7 +176,6 @@ exports.forgetPassword = catchAsync(async(req,res,next)=>{
 
 exports.resetPassword = catchAsync(async(req,res,next)=>{
   // 1) Get user based on token 
-
   const hashedToken = crypto
   .createHash('sha256')
   .update(req.params.token)

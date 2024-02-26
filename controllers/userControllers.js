@@ -13,6 +13,18 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
+exports.generateRandomCode = function(length) {
+  const characters = '0123456789';
+  let code = '';
+  
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    code += characters.charAt(randomIndex);
+  }
+
+  return code;
+};
+
 exports.createUser = (req, res) => {
   res.status(500).json({
     status: 'error here',
@@ -42,7 +54,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     );
   }
   // 2) Filtered out unwanted fileds names that are not allowed to be updated
-  const filterbody = filterObj(req.body, 'name', 'email');
+  const filterbody = filterObj(req.body, 'name', 'email', 'phoneNumber');
 
   // 3 ) update user document
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filterbody, {
