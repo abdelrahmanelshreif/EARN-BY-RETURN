@@ -1,7 +1,6 @@
 const express = require('express');
 const userController = require('../controllers/userControllers');
 const authController = require('../controllers/authController');
-const utils = require('../utils/qrCodeGenerator');
 
 const router = express.Router();
 
