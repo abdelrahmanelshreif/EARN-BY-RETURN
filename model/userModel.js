@@ -3,59 +3,67 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: [String], //Array of strings
-    required: [true, 'Please Enter Your Name']
-  },
-  email: {
-    type: String,
-    required: [true, 'Please Enter Your Email'],
-    unique: true,
-    lowercase: true,
-    validate: [validator.isEmail, 'Plase Provide a Valid Email']
-  },
-  phoneNumber: {
-    type: String,
-    required: [true, 'Please Enter Your Mobile Phone Number'],
-  },
-  role: {
-    type: String,
-    enum: ['user', 'admin', 'merchant'],
-    default: 'user',
-    required: true
-  },
-  password: {
-    type: String,
-    required: [true, 'Please Provide Your Password'],
-    minlength: 8,
-    select: false
-  },
-  passwordConfirm: {
-    type: String,
-    required: [true, 'Please Confirm Your Password'],
-    validate: [
-      {
-        validator: function(el) {
-          return el === this.password;
-        },
-        message: 'Password not the same'
-      }
-    ]
-  },
-  passwordChangedAt: {
-    type: Date,
-    default: Date.now()-1
-  },
-  passwordResetToken: String,
-  passwordResetExpires: Date,
-  active: {
-    type: Boolean,
-    select: false,
-    default: true
-  },
-  updatedAt:Date
-});
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: [String], //Array of strings
+      required: [true, 'Please Enter Your Name']
+    },
+    email: {
+      type: String,
+      required: [true, 'Please Enter Your Email'],
+      unique: true,
+      lowercase: true,
+      validate: [validator.isEmail, 'Plase Provide a Valid Email']
+    },
+    phoneNumber: {
+      type: String,
+      required: [true, 'Please Enter Your Mobile Phone Number']
+    },
+    role: {
+      type: String,
+      enum: ['user', 'admin', 'merchant'],
+      default: 'user',
+      required: true
+    },
+    password: {
+      type: String,
+      required: [true, 'Please Provide Your Password'],
+      minlength: 8,
+      select: false
+    },
+    passwordConfirm: {
+      type: String,
+      required: [true, 'Please Confirm Your Password'],
+      validate: [
+        {
+          validator: function(el) {
+            return el === this.password;
+          },
+          message: 'Password not the same'
+        }
+      ]
+    },
+    passwordChangedAt: {
+      type: Date,
+      default: Date.now() - 1
+    },
+    passwordResetToken: String,
+    passwordResetExpires: Date,
+    active: {
+      type: Boolean,
+      select: false,
+      default: true
+    },
+    updatedAt: Date,
+    wallet: {
+      points: Number,
+      Money: Number,
+      updatedAt: Date
+    }
+  } /*scema options*/,
+  { toJSON: { virtuals: true }, toObject: { virtuals: true } }
+);
 
 userSchema.pre('save', async function(next) {
   //Only run this function if password was actually modified

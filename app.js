@@ -6,6 +6,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
 const userRouter = require('./routes/userRoutes');
+const giftRouter = require('./routes/giftRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const compression = require("compression");
@@ -47,6 +48,7 @@ app.use((req,res,next)=>{
 
 // Routes
 app.use('/api/v1/user',userRouter);
+app.use('/api/v1/machine/gift',giftRouter);
 app.use(globalErrorHandler);
 
 app.all("*", (req, res, next) => {
