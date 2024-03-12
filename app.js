@@ -7,6 +7,7 @@ const xss = require("xss-clean");
 const hpp = require("hpp");
 const userRouter = require('./routes/userRoutes');
 const giftRouter = require('./routes/giftRoutes');
+const transactionRouter = require('./routes/transactionsRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const compression = require("compression");
@@ -48,7 +49,8 @@ app.use((req,res,next)=>{
 
 // Routes
 app.use('/api/v1/user',userRouter);
-app.use('/api/v1/machine/gift',giftRouter);
+app.use('/api/v1/machine/gift',giftRouter); 
+app.use('/api/v1/user/wallet/transactions',transactionRouter); 
 app.use(globalErrorHandler);
 
 app.all("*", (req, res, next) => {
