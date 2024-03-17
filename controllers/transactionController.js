@@ -18,9 +18,16 @@ exports.addGift = catchAsync(async(req,res,next)=>{
   const gift = await Gift.findById(giftId);
 
   // if Gift Not Exist 
-  if (!gift) {
+  if (!gift.active || !gift) {
     return next(new AppError('The Gift is Invalid Please Try Again with a Valid One',400));
   }
+  await Gift.findByIdAndUpdate(giftId,
+    {
+      $set: {
+        active: false
+      },
+    }
+    );
 
   // If it's Exist Adding The Gift Value to the User Wallet
   const user = await User.findByIdAndUpdate(
@@ -34,7 +41,7 @@ exports.addGift = catchAsync(async(req,res,next)=>{
       },
       $set: {
         'wallet.updatedAt': Date.now()
-      }
+      },
     },
     { new: true, runValidators: true }
   );
@@ -56,3 +63,4 @@ exports.addGift = catchAsync(async(req,res,next)=>{
   });
 
 });
+

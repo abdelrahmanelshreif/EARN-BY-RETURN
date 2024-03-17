@@ -49,8 +49,8 @@ app.use((req,res,next)=>{
 
 // Routes
 app.use('/api/v1/user',userRouter);
+app.use('/api/v1/wallet/transactions',transactionRouter); 
 app.use('/api/v1/machine/gift',giftRouter); 
-app.use('/api/v1/user/wallet/transactions',transactionRouter); 
 app.use(globalErrorHandler);
 
 app.all("*", (req, res, next) => {

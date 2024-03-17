@@ -22,18 +22,11 @@ const giftSchema = new mongoose.Schema(
     active: {
       type: Boolean,
       default: true,
-      select: false
     },
     createdAt: Date
   },
   /*scema options*/ { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
-giftSchema.pre(/^find/, function(next) {
-  // this points to current query
-  this.find({ active: { $ne: false } });
-  next();
-});
-
 giftSchema.pre('save', async function(next) {
   // Encode the _id in the QR code
   const dataToEncode = this._id.toString();
