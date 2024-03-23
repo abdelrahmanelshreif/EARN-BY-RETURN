@@ -5,11 +5,12 @@ const User = require('../model/userModel');
 const AppError = require('../utils/appError');
 const APIFeatures = require('../utils/apiFeatures');
 const Transaction = require('../model/transactionModel');
+const factory = require('./handlerFactory');
 
-exports.addGift = catchAsync(async(req,res,next)=>{
+exports.addGift = catchAsync(async (req, res, next) => {
   const giftId = req.header('Gift-Code');
 
-  // Validate giftId  
+  // Validate giftId
   if (!mongoose.Types.ObjectId.isValid(giftId)) {
     return next(new AppError('Invalid gift ID', 400));
   }
@@ -17,17 +18,17 @@ exports.addGift = catchAsync(async(req,res,next)=>{
   //Getting Gift Data
   const gift = await Gift.findById(giftId);
 
-  // if Gift Not Exist 
+  // if Gift Not Exist
   if (!gift.active || !gift) {
-    return next(new AppError('The Gift is Invalid Please Try Again with a Valid One',400));
-  }
-  await Gift.findByIdAndUpdate(giftId,
-    {
-      $set: {
-        active: false
-      },
-    }
+    return next(
+      new AppError('The Gift is Invalid Please Try Again with a Valid One', 400)
     );
+  }
+  await Gift.findByIdAndUpdate(giftId, {
+    $set: {
+      active: false
+    }
+  });
 
   // If it's Exist Adding The Gift Value to the User Wallet
   const user = await User.findByIdAndUpdate(
@@ -37,19 +38,19 @@ exports.addGift = catchAsync(async(req,res,next)=>{
         'wallet.canCount': gift.noOfCans,
         'wallet.bottleCount': gift.noOfBottles,
         'wallet.Coins': gift.giftCoins,
-        'wallet.Money': gift.giftMoney
+        'wallet.Money': gift.giftMoney,
+        machineVisits: 1
       },
       $set: {
         'wallet.updatedAt': Date.now()
-      },
+      }
     },
     { new: true, runValidators: true }
   );
 
-
- if (!user) {
+  if (!user) {
     return next(new AppError('User not found', 404));
-  }                                            
+  }
 
   const transaction = await Transaction.create({
     time: Date.now(),
@@ -59,8 +60,8 @@ exports.addGift = catchAsync(async(req,res,next)=>{
 
   res.status(200).json({
     status: 'Success',
-    message: 'Congratulations You Gift is Successfully Added Check Your Wallet',
+    message: 'Congratulations You Gift is Successfully Added Check Your Wallet'
   });
-
 });
 
+exports.getAllTransactions = factory.getAll(Transaction);

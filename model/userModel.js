@@ -57,11 +57,15 @@ const userSchema = new mongoose.Schema(
     },
     updatedAt: Date,
     wallet: {
-      Coins: {type: Number ,default: 0},
-      Money: {type: Number ,default: 0},
-      canCount:{type: Number ,default: 0},
+      Coins: { type: Number, default: 0 },
+      Money: { type: Number, default: 0 },
+      canCount: { type: Number, default: 0 },
       bottleCount: { type: Number, default: 0 },
       updatedAt: { type: Date, default: Date.now }
+    },
+    machineVisits: {
+      type: Number,
+      default: 0
     }
   } /*scema options*/,
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
