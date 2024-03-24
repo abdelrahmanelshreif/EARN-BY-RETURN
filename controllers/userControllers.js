@@ -7,7 +7,7 @@ const factory = require('./handlerFactory');
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
-  Object.keys(obj).forEach((el) => {
+  Object.keys(obj).forEach(el => {
     if (allowedFields.includes(el)) newObj[el] = obj[el];
   });
   return newObj;
@@ -16,18 +16,22 @@ const filterObj = (obj, ...allowedFields) => {
 exports.createUser = (req, res) => {
   res.status(500).json({
     status: 'error here',
-    message: 'this url is not yet defined',
+    message: 'this url is not yet defined'
   });
 };
 
-exports.getMe = (req, res,next)=>{
-  req.params.id = req.user.id ;
-  next();  
-}
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
+exports.getWallet = (req, res, next) => {
+  req.query.fields = 'wallet,machineVisits';
+  next();
+};
 exports.getUserWithId = (req, res) => {
   res.status(500).json({
     status: 'error here',
-    message: 'this url is not yet defined',
+    message: 'this url is not yet defined'
   });
 };
 
@@ -37,24 +41,30 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     return next(
       new AppError(
         'This route is not for password updates. Please use /updateMyPassword.',
-        400,
-      ),
+        400
+      )
     );
   }
   // 2) Filtered out unwanted fileds names that are not allowed to be updated
-  const filterbody = filterObj(req.body, 'name', 'email', 'phoneNumber');
+  const filterbody = filterObj(
+    req.body,
+    'name',
+    'email',
+    'phoneNumber',
+    'role'
+  );
 
   // 3 ) update user document
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filterbody, {
     runValidators: true,
-    new: true,
+    new: true
   });
 
   res.status(200).json({
     status: 'success',
     data: {
-      user: updatedUser,
-    },
+      user: updatedUser
+    }
   });
 });
 
@@ -63,7 +73,7 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
 
   res.status(204).json({
     status: 'success',
-    data: null,
+    data: null
   });
 });
 exports.getUser = factory.getOne(User);

@@ -2,7 +2,11 @@ const mongoose = require('mongoose');
 
 const merchantSchema = new mongoose.Schema({
   name: String,
-  address: String
+  address: String,
+  branches: {
+    type: String,
+    default: null
+  }
 });
 
 const Merchant = mongoose.model('Merchant', merchantSchema);

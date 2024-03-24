@@ -57,11 +57,15 @@ const userSchema = new mongoose.Schema(
     },
     updatedAt: Date,
     wallet: {
-      Coins: {type: Number ,default: 0},
-      Money: {type: Number ,default: 0},
-      canCount:{type: Number ,default: 0},
+      Coins: { type: Number, default: 0 },
+      Money: { type: Number, default: 0 },
+      canCount: { type: Number, default: 0 },
       bottleCount: { type: Number, default: 0 },
       updatedAt: { type: Date, default: Date.now }
+    },
+    machineVisits: {
+      type: Number,
+      default: 0
     }
   } /*scema options*/,
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
@@ -89,24 +93,6 @@ userSchema.pre(/^find/, function(next) {
   this.find({ active: { $ne: false } });
   next();
 });
-
-userSchema.methods.correctPassword = async function(
-  candidatePassword,
-  userPassword
-) {
-  return await bcrypt.compare(candidatePassword, userPassword);
-};
-
-userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
-  if (!this.passwordChnagedAt) {
-    const changedTimeStamp = parseInt(
-      this.passwordChangedAt.getTime() / 1000,
-      10
-    );
-    return JWTTimestamp < changedTimeStamp; //300 < 200
-  }
-  return false;
-};
 
 userSchema.methods.correctPassword = async function(
   candidatePassword,
