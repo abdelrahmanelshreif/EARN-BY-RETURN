@@ -1,12 +1,18 @@
 const mongoose = require('mongoose');
-
 const voucherSchema = new mongoose.Schema(
   {
-    factor: {
-      type: Number,
-      default: 0,
-      required: [true, 'There must be a factor!']
-    },
+    codes: [
+      {
+        code: {
+          type: String
+        },
+        active: {
+          type: Boolean,
+          default: true
+        }
+      }
+    ],
+
     voucherPoints: {
       type: Number,
       default: 0,
@@ -14,19 +20,16 @@ const voucherSchema = new mongoose.Schema(
     },
     voucherMoney: {
       type: Number,
-      default: 0
+      default: 0,
+      required: [true, 'There must be voucher Money!']
     },
-    maxPoints: {
+    validDays: {
       type: Number,
-      default: 0
+      default: 0,
+      required: [true, 'You must specify valid Days!']
     },
-    expirtDate: Date,
+    expiryDate: Date,
     createdAt: Date,
-    active: {
-      type: Boolean,
-      default: true,
-      select: false
-    },
     merchant: {
       type: mongoose.Schema.ObjectId,
       ref: 'Merchant',
@@ -35,16 +38,23 @@ const voucherSchema = new mongoose.Schema(
   },
   /*scema options*/ { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+voucherSchema.virtual('remainingDays').get(function() {
+  return (this.expiryDate - this.createdAt) / (1000 * 60 * 60 * 24);
+});
+voucherSchema.pre('save', function(next) {
+  this.expiryDate = new Date(Date.now() + 24 * 60 * 60 * 1000 * this.validDays);
+  this.createdAt = Date.now();
+  next();
+});
+// voucherSchema.pre(/^find/, function(next) {
+//   this.find({ active: { $ne: false } });
+//   next();
+// });
 voucherSchema.pre(/^find/, function(next) {
   this.populate({
     path: 'merchant',
     select: 'name'
   });
-  next();
-});
-voucherSchema.pre(/^find/, function(next) {
-  // this points to current query
-  this.find({ active: { $ne: false } });
   next();
 });
 

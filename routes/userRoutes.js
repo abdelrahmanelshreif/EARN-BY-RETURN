@@ -1,8 +1,11 @@
 const express = require('express');
 const userController = require('../controllers/userControllers');
 const authController = require('../controllers/authController');
+const transactionController = require('../controllers/transactionController');
+const transactionRouter = require('./transactionsRoutes');
 
 const router = express.Router();
+router.use('/:userId/transactions', transactionRouter);
 
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
@@ -22,6 +25,7 @@ router.get(
   userController.getWallet,
   userController.getUser
 );
+router.get('/myTransactions', transactionController.getCurrentUserTransactions);
 router.get('/me', userController.getMe, userController.getUser);
 
 // Adminstrator Features On User Protection

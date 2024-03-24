@@ -76,9 +76,9 @@ exports.getAll = Model =>
     // hack for get all reviews
     let filter = {};
     // eslint-disable-next-line no-unused-vars
-    if (req.params.tourId) filter = { tour: req.params.tourId };
-
-    const features = new APIFeatures(Model.find(), req.query)
+    if (req.params.merchantId) filter = { merchant: req.params.merchantId };
+    if (req.params.userId) filter = { user: req.params.userId };
+    const features = new APIFeatures(Model.find(filter), req.query)
       .filter()
       .sort()
       .fieldLimiting()

@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const catchAsync = require('../utils/catchAsync');
 const Gift = require('../model/giftModel');
 const User = require('../model/userModel');
+const Voucher = require('../model/voucherModel');
 const AppError = require('../utils/appError');
-const APIFeatures = require('../utils/apiFeatures');
 const Transaction = require('../model/transactionModel');
 const factory = require('./handlerFactory');
 
@@ -52,7 +52,7 @@ exports.addGift = catchAsync(async (req, res, next) => {
     return next(new AppError('User not found', 404));
   }
 
-  const transaction = await Transaction.create({
+  await Transaction.create({
     time: Date.now(),
     user: req.user.id,
     gift: giftId
@@ -61,6 +61,68 @@ exports.addGift = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'Success',
     message: 'Congratulations You Gift is Successfully Added Check Your Wallet'
+  });
+});
+exports.redeemVoucher = catchAsync(async (req, res, next) => {
+  //getting the voucher code from header
+  const voucherId = req.header('Voucher-Id');
+  //getting voucher data
+  const voucher = await Voucher.findOne({
+    _id: voucherId
+  });
+  // if Voucher Not Exist
+  if (!voucher) {
+    return next(
+      new AppError('The voucher is Invalid Please Try another Valid One', 400)
+    );
+  }
+  // Find the first active code of the voucher choosen
+  const usedCode = await voucher.codes.find(code => code.active === true);
+  //console.log(usedCode);
+  // If there's no active code
+  if (!usedCode) {
+    return next(new AppError('No active code found for the voucher', 400));
+  }
+  // Change the active attribute
+  await Voucher.updateOne(
+    { _id: voucherId, 'codes._id': usedCode._id }, // Find voucher by ID and code by ID
+    { $set: { 'codes.$.active': false } } // Update active attribute of the found code
+  );
+
+  // If it exists--> modify the user wallet
+  await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      $inc: {
+        'wallet.Coins': -voucher.voucherPoints
+      },
+      $set: {
+        'wallet.updatedAt': Date.now()
+      }
+    },
+    { new: true, runValidators: true }
+  );
+
+  await Transaction.create({
+    time: Date.now(),
+    user: req.user.id,
+    voucher: { voucherId: voucherId, codeId: usedCode._id }
+  });
+
+  res.status(200).json({
+    status: 'Success',
+    message: `Congratulations You used a Voucher Successfully Please Check Your Wallet and give this code to the Merchant`,
+    code: usedCode.code
+  });
+});
+exports.getCurrentUserTransactions = catchAsync(async (req, res, next) => {
+  const transactions = await Transaction.find({ user: req.user.id });
+  res.status(200).json({
+    status: 'success',
+    results: transactions.length,
+    data: {
+      transactions
+    }
   });
 });
 

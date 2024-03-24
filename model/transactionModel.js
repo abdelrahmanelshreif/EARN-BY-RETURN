@@ -9,9 +9,16 @@ const transactionSchema = new mongoose.Schema(
       required: [true, 'A Transaction must belong to a User!']
     },
     voucher: {
-      type: mongoose.Schema.ObjectId,
-      ref: 'Voucher',
-      default: null
+      voucherId: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Voucher',
+        default: null
+      },
+      codeId: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Voucher.codes',
+        default: null
+      }
     },
     gift: {
       type: mongoose.Schema.ObjectId,
