@@ -15,17 +15,17 @@ const voucherSchema = new mongoose.Schema(
 
     voucherPoints: {
       type: Number,
-      default: 0,
+      // default: 0,
       required: [true, 'There must be voucher points!']
     },
     voucherMoney: {
       type: Number,
-      default: 0,
+      // default: 0,
       required: [true, 'There must be voucher Money!']
     },
     validDays: {
       type: Number,
-      default: 0,
+      // default: 0,
       required: [true, 'You must specify valid Days!']
     },
     expiryDate: Date,

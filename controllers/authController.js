@@ -34,36 +34,17 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 
-exports.generateRandomCode = function(length) {
+generateRandomCode = function(length) {
   const characters = '0123456789';
   let code = '';
 
   for (let i = 0; i < length; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);
     code += characters.charAt(randomIndex);
-  }
+  } 
   return code;
 };
 
-exports.emailVerify = catchAsync(async (req, res, next) => {
-  vCode: this.generateRandomCode(4);
-  const message = `Welcome To Our Recycling System: ${req.body.name}\nWe Wanna You Use Our Best RVM Machine in MENA.\n
-  Your Verification Code is :    ${vCode}`;
-  try {
-    await sendEmail({
-      email: req.body.email,
-      subject: 'WELCOME TO EARN BY RETURN',
-      message
-    });
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Email is Valid'
-    });
-  } catch (err) {
-    return next(new AppError('Please Enter A Valid Email!', 500));
-  }
-});
 
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
@@ -72,8 +53,20 @@ exports.signup = catchAsync(async (req, res, next) => {
     phoneNumber: req.body.phoneNumber,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
-    passwordChangedAt: req.body.passwordChangedAt
+    passwordChangedAt: req.body.passwordChangedAt,
+    verificationCode: generateRandomCode(4)
   });
+  const message = `Welcome To Our Recycling System: ${newUser.name}\nWe Wanna You Use Our Best RVM Machine in MENA.\n
+  Your Verification Code is :    ${newUser.verificationCode}`;
+  try {
+    await sendEmail({
+      email: newUser.email,
+      subject: 'WELCOME TO EARN BY RETURN',
+      message
+    });
+  } catch (err) {
+    return next(new AppError('Please Enter A Valid Email!', 500));
+  }
   createSendToken(newUser, 201, res);
 });
 

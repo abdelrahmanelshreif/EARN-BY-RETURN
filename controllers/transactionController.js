@@ -90,18 +90,23 @@ exports.redeemVoucher = catchAsync(async (req, res, next) => {
   );
 
   // If it exists--> modify the user wallet
-  await User.findByIdAndUpdate(
-    req.user.id,
-    {
-      $inc: {
-        'wallet.Coins': -voucher.voucherPoints
+  if (req.user.wallet.Coins >= voucher.voucherPoints) {
+    await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        $inc: {
+          'wallet.Coins': -voucher.voucherPoints
+        },
+        $set: {
+          'wallet.updatedAt': Date.now()
+        }
       },
-      $set: {
-        'wallet.updatedAt': Date.now()
-      }
-    },
-    { new: true, runValidators: true }
-  );
+      { new: true, runValidators: true }
+    );
+  } else {
+    return next(new AppError("Sorry, You Don't Have Enough Coins", 400));
+  }
+  
 
   await Transaction.create({
     time: Date.now(),
