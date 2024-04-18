@@ -83,6 +83,12 @@ exports.redeemVoucher = catchAsync(async (req, res, next) => {
   if (!usedCode) {
     return next(new AppError('No active code found for the voucher', 400));
   }
+  if (usedCode.no === voucher.numberOfCodes) {
+    await Voucher.updateOne(
+      { _id: voucherId }, // Find voucher by ID
+      { $set: { active: false } } // Update active attribute of the found code
+    );
+  }
   // Change the active attribute
   await Voucher.updateOne(
     { _id: voucherId, 'codes._id': usedCode._id }, // Find voucher by ID and code by ID
