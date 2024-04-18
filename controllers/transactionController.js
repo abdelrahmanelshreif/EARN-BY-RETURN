@@ -131,4 +131,26 @@ exports.getCurrentUserTransactions = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.giftDetails = catchAsync(async (req, res, next) => {
+  const gift = await Gift.findById(req.params.giftID);  
+  // Check if gift is found
+  if (!gift) {
+    return next(
+      new AppError('Gift not found.', 404)
+    );
+  }
+
+  // If gift is found, send the details as a response
+  res.status(200).json({
+    status: 'success',
+    result: {
+      noOfCans: gift.noOfCans,
+      noOfBottles: gift.noOfBottles,
+      giftCoins : gift.giftCoins,
+      giftMoney : gift.giftMoney
+    }
+  });
+});
+
+
 exports.getAllTransactions = factory.getAll(Transaction);

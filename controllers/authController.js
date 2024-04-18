@@ -35,7 +35,7 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 generateRandomCode = function(length) {
-  const characters = '0123456789';
+  const characters = '123456789';
   let code = '';
 
   for (let i = 0; i < length; i++) {
@@ -146,31 +146,25 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
       new AppError('There is no user registered with this email address.', 404)
     );
   }
-  // 2) Generate random reset token
-  const resetToken = user.createPasswordResetToken();
-  await user.save({ validateBeforeSave: false });
 
-  // 3) Send it to user's email
-  const resetURL = `${req.protocol}://${req.get(
-    'host'
-  )}/api/v1/user/resetPassword/${resetToken}`;
+  const resetCode = generateRandomCode(4);
+  await User.findOneAndUpdate({"email":req.body.email},
+   {$set:{"verificationCode":resetCode}});
 
-  const message = `Forget your password? sumbit a patch request with your new password and passwrodConfirm to : ${resetURL}
+  const message = `Forget your password? Your Reset Code is : ${resetCode}
   \nIf you didn't forget your passwrod, please ignore this email!`;
 
   try {
     await sendEmail({
       email: user.email, // req.body.email -- is the same actually
-      subject: 'Your password reset token (valid only for 10 minutes)',
+      subject: 'Your Password Reset Code',
       message
     });
     res.status(200).json({
       status: 'success',
-      message: 'Token was sent to email!'
+      message: 'Reset Code was sent to email!'
     });
   } catch (err) {
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });
     return next(
       new AppError(
@@ -179,6 +173,23 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
       )
     );
   }
+});
+exports.verifyUserEmailvCodeToResetPassword = catchAsync(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (req.body.verificationCode !== user.verificationCode) {
+    return next(
+      new AppError('Wrong Verification Code.', 404)
+    );
+  }
+  // 1) Generate random reset token
+  const resetToken = user.createPasswordResetToken();
+  user.verificationCode= undefined;
+  await user.save({validateBeforeSave:false});
+
+  res.status(200).json({
+    status: 'success',
+    resetToken: resetToken
+  })
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
