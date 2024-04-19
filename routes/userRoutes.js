@@ -26,6 +26,10 @@ router.get(
   userController.getUser
 );
 router.get('/myTransactions', transactionController.getCurrentUserTransactions);
+router.get(
+  '/myTransactions/seeMore',
+  transactionController.getOneTransactionById
+);
 router.get('/me', userController.getMe, userController.getUser);
 
 // Adminstrator Features On User Protection

@@ -5,7 +5,13 @@ const voucher = require('voucher-code-generator');
 const factory = require('./handlerFactory');
 
 exports.createVoucher = catchAsync(async (req, res, next) => {
-  const { voucherMoney, voucherPoints, validDays, numberOfCodes } = req.body;
+  const {
+    voucherMoney,
+    voucherPoints,
+    validDays,
+    numberOfCodes,
+    voucherName
+  } = req.body;
   const merchant = await Merchant.findById(req.params.merchantId);
   const codes = [];
   const vouchers = voucher.generate({
@@ -25,6 +31,7 @@ exports.createVoucher = catchAsync(async (req, res, next) => {
 
   const newVoucher = await Voucher.create({
     merchant: merchant._id,
+    voucherName: voucherName,
     voucherPoints: voucherPoints,
     voucherMoney: voucherMoney,
     numberOfCodes: numberOfCodes,

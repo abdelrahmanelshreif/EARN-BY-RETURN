@@ -6,6 +6,7 @@ const Voucher = require('../model/voucherModel');
 const AppError = require('../utils/appError');
 const Transaction = require('../model/transactionModel');
 const factory = require('./handlerFactory');
+const Merchant = require('../model/merchantModel');
 
 exports.addGift = catchAsync(async (req, res, next) => {
   const giftId = req.header('Gift-Code');
@@ -54,6 +55,7 @@ exports.addGift = catchAsync(async (req, res, next) => {
 
   await Transaction.create({
     time: Date.now(),
+    transactionPoints: gift.giftCoins,
     user: req.user.id,
     gift: giftId
   });
@@ -112,6 +114,7 @@ exports.redeemVoucher = catchAsync(async (req, res, next) => {
   await Transaction.create({
     time: Date.now(),
     user: req.user.id,
+    transactionPoints: voucher.voucherPoints,
     voucher: { voucherId: voucherId, codeId: usedCode._id }
   });
 
@@ -130,6 +133,49 @@ exports.getCurrentUserTransactions = catchAsync(async (req, res, next) => {
       transactions
     }
   });
+});
+
+exports.getOneTransactionById = catchAsync(async (req, res, next) => {
+  const transactionId = req.body.TransactionId;
+  const transaction = await Transaction.findOne({
+    _id: transactionId
+  });
+  if (!transaction) {
+    return next(new AppError('No Transaction found with this ID.', 404));
+  }
+  // Check if gift or voucher
+  if (transaction.gift) {
+    const gift = await Gift.findById(transaction.gift).select(
+      '-QRCode -active'
+    );
+    if (!gift) {
+      return next(new AppError('Gift not found.', 404));
+    }
+    res.status(200).json({
+      status: 'success',
+      result: gift
+    });
+  } else if (transaction.voucher) {
+    const voucher = await Voucher.findById(transaction.voucher.voucherId);
+    if (!voucher) {
+      return next(new AppError('Voucher not found.', 404));
+    }
+    const usedCode = voucher.codes.find(
+      code => String(code._id) === String(transaction.voucher.codeId)
+    );
+    console.log(transaction.voucher.codeId);
+    // If voucher is found, send the details as a response
+    res.status(200).json({
+      status: 'success',
+      result: {
+        voucherName: Voucher.voucherName,
+        voucherMoney: voucher.voucherMoney,
+        voucherPoints: voucher.voucherPoints,
+        voucherCode: usedCode.code,
+        merchant: voucher.merchant.name
+      }
+    });
+  }
 });
 
 exports.getAllTransactions = factory.getAll(Transaction);

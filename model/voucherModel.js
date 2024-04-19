@@ -14,6 +14,7 @@ const voucherSchema = new mongoose.Schema(
         no: Number
       }
     ],
+    voucherName: String,
     active: {
       type: Boolean,
       default: true

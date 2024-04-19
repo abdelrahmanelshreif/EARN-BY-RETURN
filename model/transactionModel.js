@@ -24,7 +24,8 @@ const transactionSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'Gift',
       default: null
-    }
+    },
+    transactionPoints: Number
   } /*scema options*/,
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
