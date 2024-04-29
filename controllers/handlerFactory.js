@@ -36,7 +36,7 @@ exports.updateOne = Model =>
 
 exports.createOne = Model =>
   catchAsync(async (req, res, next) => {
-    // const newDoc = new doc({})
+    // const newDoc = new doc({}await Model.create)
     // newDoc.save()
     const newDoc = await Model.create(req.body);
     // const newTour = await Tour.findOne({ _id: req.params.id})
