@@ -2,6 +2,8 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const APIFeatures = require('../utils/apiFeatures');
 const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 exports.uploadPhoto = (folderName, fieldName) => {
   const multerStorage = multer.diskStorage({
@@ -25,6 +27,9 @@ exports.uploadPhoto = (folderName, fieldName) => {
     storage: multerStorage,
     fileFilter: multerFilter
   });
+
+  // Sending JSON response with metadata
+  //res.json({ photoUrl: `/api/merchant/photo`, photoPath: photoPath });
 
   // Return the Multer middleware for handling file uploads
   return upload.single(fieldName);
@@ -64,8 +69,6 @@ exports.updateOne = Model =>
 
 exports.createOne = (Model, additionalData) =>
   catchAsync(async (req, res, next) => {
-    // const newDoc = new doc({})
-    // newDoc.save()
     let newDocData = req.body;
     if (additionalData) {
       newDocData = additionalData;
@@ -73,12 +76,13 @@ exports.createOne = (Model, additionalData) =>
     if (req.file) {
       newDocData[req.file.fieldname] = req.file.originalname;
     }
+    console.log(newDocData);
     const newDoc = await Model.create(newDocData);
-    // const newTour = await Tour.findOne({ _id: req.params.id})
     res.status(201).json({
       status: 'success',
       data: {
-        data: newDoc
+        data: newDoc,
+        photoUrl: `/v1/accessPhoto/${req.file.originalname}`
       }
     });
   });
