@@ -3,7 +3,6 @@ const userController = require('../controllers/userControllers');
 const authController = require('../controllers/authController');
 const transactionController = require('../controllers/transactionController');
 const transactionRouter = require('./transactionsRoutes');
-const  verification  = require('../controllers/emailVerificationController');
 
 const router = express.Router();
 router.use('/:userId/transactions', transactionRouter);
