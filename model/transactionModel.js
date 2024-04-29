@@ -9,6 +9,11 @@ const transactionSchema = new mongoose.Schema(
       required: [true, 'A Transaction must belong to a User!']
     },
     voucher: {
+      voucherName: {
+        type: String,
+        ref: 'Voucher',
+        default: null
+      },
       voucherId: {
         type: mongoose.Schema.ObjectId,
         ref: 'Voucher',
