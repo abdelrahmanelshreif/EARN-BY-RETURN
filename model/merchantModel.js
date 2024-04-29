@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const merchantSchema = new mongoose.Schema({
   name: String,
+  merchantPhoto: { type: String, default: null },
   address: String,
   branches: {
     type: String,

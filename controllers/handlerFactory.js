@@ -1,6 +1,34 @@
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const APIFeatures = require('../utils/apiFeatures');
+const multer = require('multer');
+
+exports.uploadPhoto = (folderName, fieldName) => {
+  const multerStorage = multer.diskStorage({
+    destination: function(req, file, cb) {
+      cb(null, `assets/${folderName}`);
+    },
+    filename: function(req, file, cb) {
+      cb(null, file.originalname);
+    }
+  });
+
+  const multerFilter = (req, file, cb) => {
+    // Accept only image files
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true); // Accept the file
+    } else {
+      cb(new Error('Only image files are allowed!'), false); // Reject the file
+    }
+  };
+  const upload = multer({
+    storage: multerStorage,
+    fileFilter: multerFilter
+  });
+
+  // Return the Multer middleware for handling file uploads
+  return upload.single(fieldName);
+};
 
 exports.deleteOne = Model =>
   catchAsync(async (req, res, next) => {
@@ -34,11 +62,18 @@ exports.updateOne = Model =>
     });
   });
 
-exports.createOne = Model =>
+exports.createOne = (Model, additionalData) =>
   catchAsync(async (req, res, next) => {
     // const newDoc = new doc({})
     // newDoc.save()
-    const newDoc = await Model.create(req.body);
+    let newDocData = req.body;
+    if (additionalData) {
+      newDocData = additionalData;
+    }
+    if (req.file) {
+      newDocData[req.file.fieldname] = req.file.originalname;
+    }
+    const newDoc = await Model.create(newDocData);
     // const newTour = await Tour.findOne({ _id: req.params.id})
     res.status(201).json({
       status: 'success',

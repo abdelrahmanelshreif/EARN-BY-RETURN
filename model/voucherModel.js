@@ -14,6 +14,7 @@ const voucherSchema = new mongoose.Schema(
         no: Number
       }
     ],
+    voucherPhoto: { type: String, default: null },
     voucherName: String,
     active: {
       type: Boolean,

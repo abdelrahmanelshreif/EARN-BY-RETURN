@@ -4,14 +4,10 @@ const catchAsync = require('../utils/catchAsync');
 const voucher = require('voucher-code-generator');
 const factory = require('./handlerFactory');
 
+exports.uploadVoucherPhoto = factory.uploadPhoto('voucher', 'voucherPhoto');
 exports.createVoucher = catchAsync(async (req, res, next) => {
-  const {
-    voucherMoney,
-    voucherPoints,
-    validDays,
-    numberOfCodes,
-    voucherName
-  } = req.body;
+  let voucherPhoto;
+  const { numberOfCodes, voucherMoney } = req.body;
   const merchant = await Merchant.findById(req.params.merchantId);
   const codes = [];
   const vouchers = voucher.generate({
@@ -28,16 +24,18 @@ exports.createVoucher = catchAsync(async (req, res, next) => {
       no: i + 1
     });
   }
-
-  const newVoucher = await Voucher.create({
+  if (req.file) {
+    voucherPhoto = req.file.originalname;
+  }
+  const additonalData = {
     merchant: merchant._id,
-    voucherName: voucherName,
-    voucherPoints: voucherPoints,
-    voucherMoney: voucherMoney,
-    numberOfCodes: numberOfCodes,
-    validDays: validDays,
-    codes: codes
-  });
+    codes: codes,
+    voucherPhoto: voucherPhoto
+  };
+
+  const voucherData = { ...req.body, ...additonalData };
+
+  const newVoucher = await Voucher.create(voucherData);
   res.status(201).json({
     status: 'success',
     data: {
