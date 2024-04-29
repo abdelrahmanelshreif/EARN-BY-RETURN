@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const catchAsync = require('../utils/catchAsync');
 const voucherSchema = new mongoose.Schema(
   {
     codes: [
@@ -9,10 +10,21 @@ const voucherSchema = new mongoose.Schema(
         active: {
           type: Boolean,
           default: true
-        }
+        },
+        no: Number
       }
     ],
-
+    voucherPhoto: { type: String, default: null },
+    voucherName: String,
+    active: {
+      type: Boolean,
+      default: true
+    },
+    numberOfCodes: {
+      type: Number,
+      default: 1,
+      required: [true, 'You must Specify desired number of Codes']
+    },
     voucherPoints: {
       type: Number,
       // default: 0,
@@ -46,10 +58,10 @@ voucherSchema.pre('save', function(next) {
   this.createdAt = Date.now();
   next();
 });
-// voucherSchema.pre(/^find/, function(next) {
-//   this.find({ active: { $ne: false } });
-//   next();
-// });
+voucherSchema.pre(/^find/, function(next) {
+  this.find({ active: { $ne: false } });
+  next();
+});
 voucherSchema.pre(/^find/, function(next) {
   this.populate({
     path: 'merchant',

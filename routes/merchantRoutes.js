@@ -8,6 +8,9 @@ router.use('/:merchantId/vouchers', voucherRouter);
 router
   .route('/')
   .get(merchantController.getAllMerchants)
-  .post(merchantController.createMerchant);
+  .post(
+    merchantController.uploadMerchantphoto,
+    merchantController.createMerchant
+  );
 
 module.exports = router;

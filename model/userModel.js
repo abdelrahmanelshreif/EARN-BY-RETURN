@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Please Enter Your Mobile Phone Number']
     },
+    userPhoto: { type: String, default: null },
     role: {
       type: String,
       enum: ['user', 'admin', 'merchant'],
