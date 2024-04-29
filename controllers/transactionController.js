@@ -98,18 +98,23 @@ exports.redeemVoucher = catchAsync(async (req, res, next) => {
   );
 
   // If it exists--> modify the user wallet
-  await User.findByIdAndUpdate(
-    req.user.id,
-    {
-      $inc: {
-        'wallet.Coins': -voucher.voucherPoints
+  if (req.user.wallet.Coins >= voucher.voucherPoints) {
+    await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        $inc: {
+          'wallet.Coins': -voucher.voucherPoints
+        },
+        $set: {
+          'wallet.updatedAt': Date.now()
+        }
       },
-      $set: {
-        'wallet.updatedAt': Date.now()
-      }
-    },
-    { new: true, runValidators: true }
-  );
+      { new: true, runValidators: true }
+    );
+  } else {
+    return next(new AppError("Sorry, You Don't Have Enough Coins", 400));
+  }
+  
 
   await Transaction.create({
     time: Date.now(),
@@ -133,6 +138,48 @@ exports.getCurrentUserTransactions = catchAsync(async (req, res, next) => {
       transactions
     }
   });
+});
+exports.getOneTransactionById = catchAsync(async (req, res, next) => {
+  const transactionId = req.body.TransactionId;
+  const transaction = await Transaction.findOne({
+    _id: transactionId
+  });
+  if (!transaction) {
+    return next(new AppError('No Transaction found with this ID.', 404));
+  }
+  // Check if gift or voucher
+  if (transaction.gift) {
+    const gift = await Gift.findById(transaction.gift).select(
+      '-QRCode -active'
+    );
+    if (!gift) {
+      return next(new AppError('Gift not found.', 404));
+    }
+    res.status(200).json({
+      status: 'success',
+      result: gift
+    });
+  } else if (transaction.voucher) {
+    const voucher = await Voucher.findById(transaction.voucher.voucherId);
+    if (!voucher) {
+      return next(new AppError('Voucher not found.', 404));
+    }
+    const usedCode = voucher.codes.find(
+      code => String(code._id) === String(transaction.voucher.codeId)
+    );
+    console.log(transaction.voucher.codeId);
+    // If voucher is found, send the details as a response
+    res.status(200).json({
+      status: 'success',
+      result: {
+        voucherName: Voucher.voucherName,
+        voucherMoney: voucher.voucherMoney,
+        voucherPoints: voucher.voucherPoints,
+        voucherCode: usedCode.code,
+        merchant: voucher.merchant.name
+      }
+    });
+  }
 });
 
 exports.getOneTransactionById = catchAsync(async (req, res, next) => {

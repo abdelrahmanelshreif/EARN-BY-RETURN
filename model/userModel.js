@@ -67,6 +67,9 @@ const userSchema = new mongoose.Schema(
     machineVisits: {
       type: Number,
       default: 0
+    },
+    verificationCode:{
+      type: Number
     }
   } /*scema options*/,
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }

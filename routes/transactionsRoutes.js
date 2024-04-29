@@ -10,6 +10,9 @@ router.post(
   authController.protect,
   transactionController.redeemVoucher
 );
+
+router.get('/gift/:giftID',transactionController.giftDetails);
+
 // Adminstrator Features On Transaction Protection
 router
   .route('/')

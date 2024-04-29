@@ -3,6 +3,7 @@ const userController = require('../controllers/userControllers');
 const authController = require('../controllers/authController');
 const transactionController = require('../controllers/transactionController');
 const transactionRouter = require('./transactionsRoutes');
+const  verification  = require('../controllers/emailVerificationController');
 
 const router = express.Router();
 router.use('/:userId/transactions', transactionRouter);
@@ -11,6 +12,7 @@ router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 
 router.post('/forgetPassword', authController.forgetPassword);
+router.post('/resetVerification', authController.verifyUserEmailvCodeToResetPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
 
 // Protect all routes after this middleware
