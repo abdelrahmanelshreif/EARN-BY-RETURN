@@ -14,5 +14,6 @@ router
     merchantController.uploadMerchantphoto,
     merchantController.createMerchant
   );
+router.route('/accessPhoto/:filename').get(merchantController.getPhoto);
 
 module.exports = router;
