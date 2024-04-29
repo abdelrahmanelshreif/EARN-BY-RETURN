@@ -5,6 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+
 exports.uploadPhoto = (folderName, fieldName) => {
   const multerStorage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -14,6 +15,7 @@ exports.uploadPhoto = (folderName, fieldName) => {
       cb(null, file.originalname);
     }
   });
+
 
   const multerFilter = (req, file, cb) => {
     // Accept only image files
@@ -28,20 +30,25 @@ exports.uploadPhoto = (folderName, fieldName) => {
     fileFilter: multerFilter
   });
 
+
   // Sending JSON response with metadata
   //res.json({ photoUrl: `/api/merchant/photo`, photoPath: photoPath });
+
 
   // Return the Multer middleware for handling file uploads
   return upload.single(fieldName);
 };
 
+
 exports.deleteOne = Model =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
 
+
     if (!doc) {
       return next(new AppError('No document found with that ID', 404));
     }
+
 
     res.status(204).json({
       status: 'success',
@@ -49,12 +56,14 @@ exports.deleteOne = Model =>
     });
   });
 
+
 exports.updateOne = Model =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true
     });
+
 
     if (!doc) {
       return next(new AppError('No document Found with that ID', 404));
@@ -66,6 +75,7 @@ exports.updateOne = Model =>
       }
     });
   });
+
 
 exports.createOne = (Model, additionalData) =>
   catchAsync(async (req, res, next) => {
@@ -82,10 +92,11 @@ exports.createOne = (Model, additionalData) =>
       status: 'success',
       data: {
         data: newDoc,
-        photoUrl: `/v1/accessPhoto/${req.file.originalname}`
+        photoUrl: `/v1/accessPhoto/user.jpeg`
       }
     });
   });
+
 
 exports.getOne = (Model, popOptions) =>
   catchAsync(async (req, res, next) => {
@@ -98,9 +109,11 @@ exports.getOne = (Model, popOptions) =>
     // const docs = await features.query.explain();
     const doc = await features.query;
 
+
     if (!doc) {
       return next(new AppError('No document found with that ID', 404));
     }
+
 
     res.status(200).json({
       status: 'success',
@@ -109,6 +122,7 @@ exports.getOne = (Model, popOptions) =>
       }
     });
   });
+
 
 exports.getAll = Model =>
   catchAsync(async (req, res, next) => {
@@ -124,6 +138,7 @@ exports.getAll = Model =>
       .paginate();
     // const docs = await features.query.explain();
     const docs = await features.query;
+
 
     res.status(200).json({
       status: 'success',
