@@ -91,14 +91,14 @@ exports.redeemVoucher = catchAsync(async (req, res, next) => {
       { $set: { active: false } } // Update active attribute of the found code
     );
   }
-  // Change the active attribute
-  await Voucher.updateOne(
-    { _id: voucherId, 'codes._id': usedCode._id }, // Find voucher by ID and code by ID
-    { $set: { 'codes.$.active': false } } // Update active attribute of the found code
-  );
 
   // If it exists--> modify the user wallet
   if (req.user.wallet.Coins >= voucher.voucherPoints) {
+    // Change the active attribute
+    await Voucher.updateOne(
+      { _id: voucherId, 'codes._id': usedCode._id }, // Find voucher by ID and code by ID
+      { $set: { 'codes.$.active': false } } // Update active attribute of the found code
+    );
     await User.findByIdAndUpdate(
       req.user.id,
       {
@@ -114,13 +114,16 @@ exports.redeemVoucher = catchAsync(async (req, res, next) => {
   } else {
     return next(new AppError("Sorry, You Don't Have Enough Coins", 400));
   }
-  
 
   await Transaction.create({
     time: Date.now(),
     user: req.user.id,
     transactionPoints: voucher.voucherPoints,
-    voucher: { voucherId: voucherId, codeId: usedCode._id }
+    voucher: {
+      voucherName: voucher.voucherName,
+      voucherId: voucherId,
+      codeId: usedCode._id
+    }
   });
 
   res.status(200).json({
@@ -130,7 +133,15 @@ exports.redeemVoucher = catchAsync(async (req, res, next) => {
   });
 });
 exports.getCurrentUserTransactions = catchAsync(async (req, res, next) => {
-  const transactions = await Transaction.find({ user: req.user.id });
+  const transactions = await Transaction.find({ user: req.user.id }).select(
+    '-user'
+  );
+
+  for (let i = 0; i < transactions.length; i++) {
+    if (transactions[i].voucher) {
+      const voucher = await Voucher.findById(transactions[i].voucher.voucherId);
+    }
+  }
   res.status(200).json({
     status: 'success',
     results: transactions.length,
@@ -138,48 +149,6 @@ exports.getCurrentUserTransactions = catchAsync(async (req, res, next) => {
       transactions
     }
   });
-});
-exports.getOneTransactionById = catchAsync(async (req, res, next) => {
-  const transactionId = req.body.TransactionId;
-  const transaction = await Transaction.findOne({
-    _id: transactionId
-  });
-  if (!transaction) {
-    return next(new AppError('No Transaction found with this ID.', 404));
-  }
-  // Check if gift or voucher
-  if (transaction.gift) {
-    const gift = await Gift.findById(transaction.gift).select(
-      '-QRCode -active'
-    );
-    if (!gift) {
-      return next(new AppError('Gift not found.', 404));
-    }
-    res.status(200).json({
-      status: 'success',
-      result: gift
-    });
-  } else if (transaction.voucher) {
-    const voucher = await Voucher.findById(transaction.voucher.voucherId);
-    if (!voucher) {
-      return next(new AppError('Voucher not found.', 404));
-    }
-    const usedCode = voucher.codes.find(
-      code => String(code._id) === String(transaction.voucher.codeId)
-    );
-    console.log(transaction.voucher.codeId);
-    // If voucher is found, send the details as a response
-    res.status(200).json({
-      status: 'success',
-      result: {
-        voucherName: Voucher.voucherName,
-        voucherMoney: voucher.voucherMoney,
-        voucherPoints: voucher.voucherPoints,
-        voucherCode: usedCode.code,
-        merchant: voucher.merchant.name
-      }
-    });
-  }
 });
 
 exports.getOneTransactionById = catchAsync(async (req, res, next) => {
@@ -210,12 +179,12 @@ exports.getOneTransactionById = catchAsync(async (req, res, next) => {
     const usedCode = voucher.codes.find(
       code => String(code._id) === String(transaction.voucher.codeId)
     );
-    console.log(transaction.voucher.codeId);
+    //console.log(transaction.voucher.codeId);
     // If voucher is found, send the details as a response
     res.status(200).json({
       status: 'success',
       result: {
-        voucherName: Voucher.voucherName,
+        voucherName: voucher.voucherName,
         voucherMoney: voucher.voucherMoney,
         voucherPoints: voucher.voucherPoints,
         voucherCode: usedCode.code,

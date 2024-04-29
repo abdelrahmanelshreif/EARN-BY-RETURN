@@ -15,7 +15,10 @@ const voucherSchema = new mongoose.Schema(
       }
     ],
     voucherPhoto: { type: String, default: null },
-    voucherName: String,
+    voucherName: {
+      type: String,
+      required: [true, 'You must Specify voucher Name']
+    },
     active: {
       type: Boolean,
       default: true
