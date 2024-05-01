@@ -3,42 +3,47 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
 const path = require('path');
-const multer = require('multer');
 
-// Define storage for uploaded files
-const multerStorage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, '../assets/merchant');
-  },
-  filename: function(req, file, cb) {
-    cb(null, file.originalname);
+exports.uploadMerchantphoto = factory.uploadPhoto('merchant', 'merchantPhoto');
+
+exports.createMerchant = catchAsync(async (req, res, next) => {
+
+  console.log(req.file);
+  if (!req.file) {
+    return next(new AppError('Enter Your Merchant Data Please', 500));
   }
-});
+  const { name, address, branches, originalname, buffer } = req.file;
 
-const multerFilter = (req, file, cb) => {
-  // Accept only image files
-  if (file.mimetype.startsWith('image/')) {
-    cb(null, true); // Accept the file
-  } else {
-    cb(new Error('Only image files are allowed!'), false); // Reject the file
-  }
-};
-
-const upload = multer({ storage: multerStorage,fileFilter: multerFilter});
-
-exports.createMerchant =(upload.single('photo'), catchAsync(async (req, res, next) => {
-  const newMerchant = await Merchant.create({
-    name: req.body.name,
-    address: req.body.address,
-    merchantPhoto: req.file ? req.file.originalname : null
+  const newMerchant = new Merchant({
+    name,
+    address,
+    branches,
+    merchantPhoto: {
+      name: originalname,
+      data: buffer
+    }
   });
+
+  // Save the merchant to the database
+  await newMerchant.save();
 
   res.status(201).json({
-    status: 'success',
-    data: newMerchant
+    message: 'Merchant created successfully',
+    merchant: newMerchant
   });
 
-  return next(new AppError('Please try adding the merchant again.'));
-}));
-
+  return next(new AppError('Internal Server Error', 500));
+});
 exports.getAllMerchants = factory.getAll(Merchant);
+
+exports.getPhoto = (req, res) => {
+  // Extract the filename parameter from the request URL
+
+  // Construct the path to the photo file
+  const photo = req.file.photoPath;
+  const photoPath = path.join(__dirname, `../assets/${photo}`);
+  console.log(photoPath);
+
+  // Send the photo file as a response
+  res.sendFile(photoPath);
+};

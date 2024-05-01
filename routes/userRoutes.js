@@ -11,13 +11,20 @@ router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 
 router.post('/forgetPassword', authController.forgetPassword);
-router.post('/resetVerification', authController.verifyUserEmailvCodeToResetPassword);
+router.post(
+  '/resetVerification',
+  authController.verifyUserEmailvCodeToResetPassword
+);
 router.patch('/resetPassword/:token', authController.resetPassword);
 
 // Protect all routes after this middleware
 router.use(authController.protect);
 
-router.patch('/updateMe', userController.updateMe);
+router.patch(
+  '/updateMe',
+  userController.uploadUserphoto,
+  userController.updateMe
+);
 router.patch('/updateMyPassword', authController.updatePassword);
 router.delete('/deleteMe', userController.deleteMe);
 router.get(
@@ -27,6 +34,10 @@ router.get(
   userController.getUser
 );
 router.get('/myTransactions', transactionController.getCurrentUserTransactions);
+router.get(
+  '/myTransactions/seeMore',
+  transactionController.getOneTransactionById
+);
 router.get('/me', userController.getMe, userController.getUser);
 
 // Adminstrator Features On User Protection

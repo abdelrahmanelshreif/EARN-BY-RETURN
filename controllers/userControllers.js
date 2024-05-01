@@ -1,5 +1,4 @@
 // eslint-disable-next-line no-unused-vars
-const express = require('express');
 const User = require('../model/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
@@ -12,6 +11,7 @@ const filterObj = (obj, ...allowedFields) => {
   });
   return newObj;
 };
+exports.uploadUserphoto = factory.uploadPhoto('avatar', 'userPhoto');
 
 exports.createUser = (req, res) => {
   res.status(500).json({
@@ -36,6 +36,7 @@ exports.getUserWithId = (req, res) => {
 };
 
 exports.updateMe = catchAsync(async (req, res, next) => {
+  console.log(req.file);
   // 1) Create error if user POSTs password data
   if (req.body.password || req.body.passwordConfirm) {
     return next(
@@ -53,6 +54,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     'phoneNumber',
     'role'
   );
+  if (req.file) filterbody.photo = req.file.filename;
 
   // 3 ) update user document
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filterbody, {
