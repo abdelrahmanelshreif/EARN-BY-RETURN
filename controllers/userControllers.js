@@ -9,15 +9,10 @@ const path = require('path');
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
   Object.keys(obj).forEach(el => {
-    if (allowedFields.includes(el)) newObj[el] = obj[el];z  
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
   });
   return newObj;
 };
-<<<<<<< HEAD
-exports.uploadUserphoto = factory.uploadPhoto('avatar', 'userPhoto');
-
-=======
->>>>>>> e46bfbe (Upload User Avatar)
 exports.createUser = (req, res) => {
   res.status(500).json({
     status: 'error here',

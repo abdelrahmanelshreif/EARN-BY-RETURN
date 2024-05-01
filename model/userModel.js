@@ -70,10 +70,7 @@ const userSchema = new mongoose.Schema(
     },
     verificationCode:{
       type: Number
-    },
-    profilePhoto:{
-      type: String
-    },
+    }
   } /*scema options*/,
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
