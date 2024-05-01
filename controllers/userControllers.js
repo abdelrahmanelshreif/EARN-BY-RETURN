@@ -11,7 +11,7 @@ const filterObj = (obj, ...allowedFields) => {
   });
   return newObj;
 };
-exports.uploadUserphoto = factory.uploadPhoto('avatar', 'userPhoto');
+//exports.uploadUserphoto = factory.uploadPhoto('avatar', 'userPhoto');
 
 exports.createUser = (req, res) => {
   res.status(500).json({

@@ -1,19 +1,19 @@
-const Merchant = require('../model/merchantModel');
-const factory = require('./handlerFactory');
-const path = require('path');
+const Merchant = require("../model/merchantModel");
+const factory = require("./handlerFactory");
 
-exports.uploadMerchantphoto = factory.uploadPhoto('merchant', 'merchantPhoto');
-exports.createMerchant = factory.createOne(Merchant);
+exports.uploadMerchantphoto = factory.uploadPhoto("merchantPhoto");
 exports.getAllMerchants = factory.getAll(Merchant);
-exports.getPhoto = (req, res) => {
-  // Extract the filename parameter from the request URL
-  //const filename = req.params.filename;
+exports.createMerchant = factory.createOne(Merchant);
 
-  // Construct the path to the photo file
+// exports.getPhoto = (req, res) => {
+//   // Extract the filename parameter from the request URL
+//   //const filename = req.params.filename;
 
-  const photoPath = path.join(__dirname, '../assets/merchant/user1.jpeg');
-  console.log(photoPath);
+//   // Construct the path to the photo file
 
-  // Send the photo file as a response
-  res.sendFile(photoPath);
-};
+//   const photoPath = path.join(__dirname, "../assets/merchant/user1.jpeg");
+//   console.log(photoPath);
+
+//   // Send the photo file as a response
+//   res.sendFile(photoPath);
+// };
