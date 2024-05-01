@@ -3,6 +3,8 @@ const User = require('../model/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
+const fs = require('fs');
+const path = require('path');
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -11,8 +13,6 @@ const filterObj = (obj, ...allowedFields) => {
   });
   return newObj;
 };
-//exports.uploadUserphoto = factory.uploadPhoto('avatar', 'userPhoto');
-
 exports.createUser = (req, res) => {
   res.status(500).json({
     status: 'error here',
@@ -34,7 +34,28 @@ exports.getUserWithId = (req, res) => {
     message: 'this url is not yet defined'
   });
 };
-
+exports.uploadUserphoto = catchAsync(async (req, res) => {
+  const avatarNo = req.body.avatarNo;
+  // Construct the file path
+  const photoPath = path.join(
+    __dirname,
+    '..',
+    'assets',
+    'avatar',
+    `${avatarNo}.jpg`
+  );
+  // Read the file asynchronously
+  fs.readFile(photoPath, async (err, data) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error reading photo file' });
+    }
+    // Update the user document in the database with the photo data
+    await User.findByIdAndUpdate(req.user.id, {
+      $set: { userPhoto: data.toString('base64') }
+    });
+    res.sendFile(photoPath);
+  });
+});
 exports.updateMe = catchAsync(async (req, res, next) => {
   console.log(req.file);
   // 1) Create error if user POSTs password data
@@ -54,7 +75,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     'phoneNumber',
     'role'
   );
-  if (req.file) filterbody.photo = req.file.filename;
+  // if (req.file) filterbody.photo = req.file.filename;
 
   // 3 ) update user document
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filterbody, {
