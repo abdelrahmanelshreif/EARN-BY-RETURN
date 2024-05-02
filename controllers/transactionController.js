@@ -9,7 +9,7 @@ const factory = require('./handlerFactory');
 const Merchant = require('../model/merchantModel');
 
 exports.addGift = catchAsync(async (req, res, next) => {
-  const giftId = req.body('Gift-Code');
+  const giftId = req.body.GiftCode;
 
   // Validate giftId
   if (!mongoose.Types.ObjectId.isValid(giftId)) {
@@ -67,7 +67,7 @@ exports.addGift = catchAsync(async (req, res, next) => {
 });
 exports.redeemVoucher = catchAsync(async (req, res, next) => {
   //getting the voucher code from header
-  const voucherId = req.body('Voucher-Id');
+  const voucherId = req.body.VoucherID;
   //getting voucher data
   const voucher = await Voucher.findOne({
     _id: voucherId
