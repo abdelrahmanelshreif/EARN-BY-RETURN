@@ -60,9 +60,12 @@ exports.addGift = catchAsync(async (req, res, next) => {
     gift: giftId
   });
 
+  console.log(gift);
   res.status(200).json({
     status: 'Success',
-    message: 'Congratulations You Gift is Successfully Added Check Your Wallet'
+    message: 'Congratulations You Gift is Successfully Added Check Your Wallet' ,
+    coins: gift.giftCoins,
+    money: gift.giftMoney,
   });
 });
 exports.redeemVoucher = catchAsync(async (req, res, next) => {
