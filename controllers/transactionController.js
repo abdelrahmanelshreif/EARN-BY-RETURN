@@ -9,7 +9,7 @@ const factory = require('./handlerFactory');
 const Merchant = require('../model/merchantModel');
 
 exports.addGift = catchAsync(async (req, res, next) => {
-  const giftId = req.header('Gift-Code');
+  const giftId = req.body.GiftCode;
 
   // Validate giftId
   if (!mongoose.Types.ObjectId.isValid(giftId)) {
@@ -60,14 +60,17 @@ exports.addGift = catchAsync(async (req, res, next) => {
     gift: giftId
   });
 
+  console.log(gift);
   res.status(200).json({
     status: 'Success',
-    message: 'Congratulations You Gift is Successfully Added Check Your Wallet'
+    message: 'Congratulations You Gift is Successfully Added Check Your Wallet' ,
+    coins: gift.giftCoins,
+    money: gift.giftMoney,
   });
 });
 exports.redeemVoucher = catchAsync(async (req, res, next) => {
   //getting the voucher code from header
-  const voucherId = req.header('Voucher-Id');
+  const voucherId = req.body.VoucherID;
   //getting voucher data
   const voucher = await Voucher.findOne({
     _id: voucherId
