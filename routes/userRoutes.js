@@ -36,6 +36,7 @@ router.get(
   transactionController.getOneTransactionById
 );
 router.get('/me', userController.getMe, userController.getUser);
+router.get('/homeData', userController.homeUserDate);
 
 // Adminstrator Features On User Protection
 router.use(authController.restrictTo('admin')); ///////////////////////////////////////////checkkkkkkkkkk
