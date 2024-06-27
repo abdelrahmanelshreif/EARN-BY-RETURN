@@ -5,8 +5,9 @@ const giftController = require('../controllers/giftController');
 
 const router = express.Router();
 
-router.post('/create',giftController.createGift);
 
+router.get('/',giftController.processReady);
+router.post('/create',giftController.createGift);
 router.get('/:giftId/qrcode',giftController.getQRCode);
 
 module.exports = router;
