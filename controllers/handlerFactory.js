@@ -1,75 +1,113 @@
-const AppError = require("../utils/appError");
-const catchAsync = require("../utils/catchAsync");
-const APIFeatures = require("../utils/apiFeatures");
-const multer = require("multer");
+const AppError = require('../utils/appError');
+const catchAsync = require('../utils/catchAsync');
+const APIFeatures = require('../utils/apiFeatures');
+const multer = require('multer');
+const path = require('path');
 
-exports.uploadPhoto = (fieldName) =>
+const multerStorage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, './assets/voucher');
+  },
+  filename: function(req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const extension = file.originalname.split('.').pop();
+    cb(null, uniqueSuffix + '.' + extension);
+  }
+});
+const multerFilter = (req, file, cb) => {
+  // Accept only image files
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true); // Accept the file
+  } else {
+    cb(new Error('Only image files are allowed!'), false); // Reject the file
+  }
+};
+
+exports.uploadVoucherPhoto = fieldName =>
   catchAsync(async (req, res, next) => {
-    // Initialize Multer middleware with memory storage to access the buffer
-    const multerStorage = multer.memoryStorage();
-    const multerFilter = (req, file, cb) => {
-      // Accept only image files
-      if (file.mimetype.startsWith("image/")) {
-        cb(null, true); // Accept the file
-      } else {
-        cb(new Error("Only image files are allowed!"), false); // Reject the file
-      }
-    };
     const upload = multer({
       storage: multerStorage,
-      fileFilter: multerFilter,
+      fileFilter: multerFilter
     }).single(fieldName);
     // Handle file upload
-    upload(req, res, (err) => {
+    upload(req, res, err => {
       if (err) {
-        return next(new AppError("Error uploading file", 500));
+        return next(new AppError('Error uploading file', 400));
       }
       next(); // Call next middleware or route handler
     });
   });
-exports.deleteOne = (Model) =>
+exports.uploadMerchantPhoto = fieldName =>
+  catchAsync(async (req, res, next) => {
+    const upload = multer({
+      storage: multer.memoryStorage(),
+      fileFilter: multerFilter
+    }).single(fieldName);
+    // Handle file upload
+    upload(req, res, err => {
+      if (err) {
+        return next(new AppError('Error uploading file', 400));
+      }
+      next(); // Call next middleware or route handler
+    });
+  });
+
+exports.accessPhoto = catchAsync(async (req, res, next) => {
+  const filename = req.params.filename;
+  if (!filename) {
+    return next(new AppError('No Photo Found', 404));
+  }
+  const filePath = path.join(__dirname, '..', 'assets', 'voucher', filename);
+  res.sendFile(filePath);
+});
+
+exports.deleteOne = Model =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
 
     if (!doc) {
-      return next(new AppError("No document found with that ID", 404));
+      return next(new AppError('No document found with that ID', 404));
     }
 
     res.status(204).json({
-      status: "success",
-      data: null,
+      status: 'success',
+      data: null
     });
   });
-exports.updateOne = (Model) =>
-  catchAsync(async (req, res, next) => {
-    const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!doc) {
-      return next(new AppError("No document Found with that ID", 404));
-    }
-    res.status(200).json({
-      status: "sucess",
-      data: {
-        data: doc,
-      },
-    });
-  });
-exports.createOne = (Model) =>
+exports.updateOne = Model =>
   catchAsync(async (req, res, next) => {
     let newDocData = req.body;
     if (req.file) {
       const buffer = req.file.buffer;
-      newDocData[req.file.fieldname] = buffer.toString("base64");
+      newDocData[req.file.fieldname] = buffer.toString('base64');
+    }
+    const doc = await Model.findByIdAndUpdate(req.params.id, newDocData, {
+      new: true,
+      runValidators: true
+    });
+    if (!doc) {
+      return next(new AppError('No document Found with that ID', 404));
+    }
+    res.status(200).json({
+      status: 'sucess',
+      data: {
+        data: doc
+      }
+    });
+  });
+exports.createOne = Model =>
+  catchAsync(async (req, res, next) => {
+    let newDocData = req.body;
+    if (req.file) {
+      const buffer = req.file.buffer;
+      newDocData[req.file.fieldname] = buffer.toString('base64');
     }
     const newDoc = await Model.create(newDocData);
     res.status(201).json({
-      status: "success",
+      status: 'success',
       data: {
-        data: newDoc,
-      },
+        data: newDoc
+      }
     });
   });
 exports.getOne = (Model, popOptions) =>
@@ -84,17 +122,17 @@ exports.getOne = (Model, popOptions) =>
     const doc = await features.query;
 
     if (!doc) {
-      return next(new AppError("No document found with that ID", 404));
+      return next(new AppError('No document found with that ID', 404));
     }
 
     res.status(200).json({
-      status: "success",
+      status: 'success',
       data: {
-        data: doc,
-      },
+        data: doc
+      }
     });
   });
-exports.getAll = (Model) =>
+exports.getAll = Model =>
   catchAsync(async (req, res, next) => {
     // hack for get all reviews
     let filter = {};
@@ -110,10 +148,10 @@ exports.getAll = (Model) =>
     const docs = await features.query;
 
     res.status(200).json({
-      status: "success",
+      status: 'success',
       results: docs.length,
       data: {
-        docs,
-      },
+        docs
+      }
     });
   });

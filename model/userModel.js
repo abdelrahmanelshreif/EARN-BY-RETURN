@@ -9,6 +9,10 @@ const userSchema = new mongoose.Schema(
       type: [String], //Array of strings
       required: [true, 'Please Enter Your Name']
     },
+    gender: {
+      type: String,
+      enum: ['male', 'female']
+    },
     email: {
       type: String,
       required: [true, 'Please Enter Your Email'],
@@ -68,7 +72,7 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
-    verificationCode:{
+    verificationCode: {
       type: Number
     }
   } /*scema options*/,
@@ -81,7 +85,7 @@ userSchema.pre('save', async function(next) {
   //hash the password with the cost of 12
   this.password = await bcrypt.hash(this.password, 12);
   //delete password Confirm field
-  this.passwordConfirm = undefined;   
+  this.passwordConfirm = undefined;
   next();
 });
 

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const catchAsync = require('../utils/catchAsync');
 const voucherSchema = new mongoose.Schema(
   {
     codes: [
