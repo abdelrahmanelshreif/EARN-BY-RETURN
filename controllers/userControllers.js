@@ -103,18 +103,3 @@ exports.getUser = factory.getOne(User);
 exports.getAllUsers = factory.getAll(User);
 exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
-exports.homeUserDate = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
-  let data = [];
-  data = [
-    user.wallet.Coins,
-    user.wallet.Money,
-    user.machineVisits,
-    user.wallet.canCount,
-    user.wallet.bottleCount
-  ];
-  res.status(200).json({
-    status: 'success',
-    data
-  });
-});
