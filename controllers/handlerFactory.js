@@ -23,24 +23,10 @@ const multerFilter = (req, file, cb) => {
   }
 };
 
-exports.uploadVoucherPhoto = fieldName =>
+exports.uploadPhoto = fieldName =>
   catchAsync(async (req, res, next) => {
     const upload = multer({
       storage: multerStorage,
-      fileFilter: multerFilter
-    }).single(fieldName);
-    // Handle file upload
-    upload(req, res, err => {
-      if (err) {
-        return next(new AppError('Error uploading file', 400));
-      }
-      next(); // Call next middleware or route handler
-    });
-  });
-exports.uploadMerchantPhoto = fieldName =>
-  catchAsync(async (req, res, next) => {
-    const upload = multer({
-      storage: multer.memoryStorage(),
       fileFilter: multerFilter
     }).single(fieldName);
     // Handle file upload
@@ -99,8 +85,8 @@ exports.createOne = Model =>
   catchAsync(async (req, res, next) => {
     let newDocData = req.body;
     if (req.file) {
-      const buffer = req.file.buffer;
-      newDocData[req.file.fieldname] = buffer.toString('base64');
+      const photoURL = `https://earn-by-return.onrender.com/api/v1/photo/${req.file.filename}`;
+      newDocData[req.file.fieldname] = photoURL;
     }
     const newDoc = await Model.create(newDocData);
     res.status(201).json({

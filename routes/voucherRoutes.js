@@ -14,5 +14,4 @@ router.get(
   voucherController.hideUndesiredData,
   voucherController.getAllVouchers
 );
-router.route('/photo/:filename').get(voucherController.getVoucherPhoto);
 module.exports = router;

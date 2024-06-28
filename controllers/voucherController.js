@@ -4,7 +4,7 @@ const catchAsync = require('../utils/catchAsync');
 const voucher = require('voucher-code-generator');
 const factory = require('./handlerFactory');
 
-exports.uploadVoucherPhoto = factory.uploadVoucherPhoto('voucherPhoto');
+exports.uploadVoucherPhoto = factory.uploadPhoto('voucherPhoto');
 exports.getVoucherPhoto = factory.accessPhoto;
 exports.createVoucher = catchAsync(async (req, res, next) => {
   let voucherPhoto;
@@ -26,7 +26,7 @@ exports.createVoucher = catchAsync(async (req, res, next) => {
     });
   }
   if (req.file) {
-    const photoURL = `https://earn-by-return.onrender.com/api/v1/vouchers/photo/${req.file.filename}`;
+    const photoURL = `https://earn-by-return.onrender.com/api/v1/photo/${req.file.filename}`;
     voucherPhoto = photoURL;
   }
   const additonalData = {

@@ -10,6 +10,7 @@ const giftRouter = require('./routes/giftRoutes');
 const merchantRouter = require('./routes/merchantRoutes');
 const voucherRouter = require('./routes/voucherRoutes');
 const transactionRouter = require('./routes/transactionsRoutes');
+const photoRouter = require('./routes/photoRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const compression = require('compression');
@@ -54,6 +55,7 @@ app.use('/api/v1/wallet/transactions', transactionRouter);
 app.use('/api/v1/machine/gift', giftRouter);
 app.use('/api/v1/merchant', merchantRouter);
 app.use('/api/v1/vouchers', voucherRouter);
+app.use('/api/v1/photo', photoRouter);
 app.use(globalErrorHandler);
 
 app.all('*', (req, res, next) => {
