@@ -67,7 +67,7 @@ voucherSchema.pre(/^find/, function(next) {
 voucherSchema.pre(/^find/, function(next) {
   this.populate({
     path: 'merchant',
-    select: 'name'
+    select: 'name merchantPhoto'
   });
   next();
 });
