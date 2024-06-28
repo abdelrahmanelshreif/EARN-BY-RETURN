@@ -1,19 +1,17 @@
-const express = require("express");
-const voucherRouter = require("./voucherRoutes");
-const merchantController = require("../controllers/merchantController");
-const authController = require("../controllers/authController");
+const express = require('express');
+const voucherRouter = require('./voucherRoutes');
+const merchantController = require('../controllers/merchantController');
+const authController = require('../controllers/authController');
 
 const router = express.Router();
-router.use("/:merchantId/vouchers", voucherRouter);
+router.use('/:merchantId/vouchers', voucherRouter);
 router.use(authController.protect);
 router
-  .route("/")
+  .route('/')
   .get(merchantController.getAllMerchants)
   .post(
-    authController.restrictTo("admin"),
+    authController.restrictTo('admin'),
     merchantController.uploadMerchantphoto,
     merchantController.createMerchant
   );
-//router.route('/accessPhoto/user1.jpeg').get(merchantController.getPhoto);
-
 module.exports = router;

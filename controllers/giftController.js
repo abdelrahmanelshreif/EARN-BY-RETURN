@@ -2,6 +2,13 @@ const Gift = require('../model/giftModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
+
+exports.processReady = catchAsync(async(req,res,next)=>{
+  res.status(200).json({
+    status:'Ready'
+  });
+  
+})
 exports.createGift = catchAsync(async (req, res, next) => {
   const { noOfCans, noOfBottles } = req.body;
 
