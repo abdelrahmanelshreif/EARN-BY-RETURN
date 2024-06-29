@@ -63,9 +63,9 @@ exports.addGift = catchAsync(async (req, res, next) => {
   console.log(gift);
   res.status(200).json({
     status: 'Success',
-    message: 'Congratulations You Gift is Successfully Added Check Your Wallet' ,
+    message: 'Congratulations You Gift is Successfully Added Check Your Wallet',
     coins: gift.giftCoins,
-    money: gift.giftMoney,
+    money: gift.giftMoney
   });
 });
 exports.redeemVoucher = catchAsync(async (req, res, next) => {
@@ -154,7 +154,7 @@ exports.getCurrentUserTransactions = catchAsync(async (req, res, next) => {
   });
 });
 exports.getOneTransactionById = catchAsync(async (req, res, next) => {
-  const transactionId = req.body.TransactionId;
+  const transactionId = req.params.TransactionId;
   const transaction = await Transaction.findOne({
     _id: transactionId
   });

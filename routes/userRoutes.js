@@ -32,7 +32,7 @@ router.get(
 );
 router.get('/myTransactions', transactionController.getCurrentUserTransactions);
 router.get(
-  '/myTransactions/seeMore',
+  '/myTransactions/:TransactionId',
   transactionController.getOneTransactionById
 );
 router.get('/me', userController.getMe, userController.getUser);

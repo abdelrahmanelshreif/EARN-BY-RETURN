@@ -11,7 +11,8 @@ const userSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      enum: ['male', 'female']
+      enum: ['male', 'female'],
+      default: 'male'
     },
     email: {
       type: String,
@@ -22,7 +23,8 @@ const userSchema = new mongoose.Schema(
     },
     phoneNumber: {
       type: String,
-      required: [true, 'Please Enter Your Mobile Phone Number']
+      required: [true, 'Please Enter Your Mobile Phone Number'],
+      unique: true
     },
     userPhoto: { type: String, default: null },
     role: {
