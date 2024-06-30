@@ -8,10 +8,14 @@ const merchantSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  logo: { type: String, default: null },
-  createdAt:  {
-    type:Date,
+  // logo: { type: String, default: null },
+  createdAt: {
+    type: Date,
     default: Date.now()
+  },
+  noOfRedeems: {
+    type: Number,
+    default: 0
   }
 });
 

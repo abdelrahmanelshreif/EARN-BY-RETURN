@@ -128,6 +128,9 @@ exports.redeemVoucher = catchAsync(async (req, res, next) => {
       codeId: usedCode._id
     }
   });
+  await Merchant.findByIdAndUpdate(voucher.merchant, {
+    $inc: { noOfRedeems: 1 }
+  });
 
   res.status(200).json({
     status: 'Success',
@@ -181,7 +184,6 @@ exports.getOneTransactionById = catchAsync(async (req, res, next) => {
     const usedCode = voucher.codes.find(
       code => String(code._id) === String(transaction.voucher.codeId)
     );
-    //console.log(transaction.voucher.codeId);
     // If voucher is found, send the details as a response
     res.status(200).json({
       status: 'success',
@@ -190,7 +192,10 @@ exports.getOneTransactionById = catchAsync(async (req, res, next) => {
         voucherMoney: voucher.voucherMoney,
         voucherPoints: voucher.voucherPoints,
         voucherCode: usedCode.code,
-        merchant: voucher.merchant.name
+        voucherPhoto: voucher.voucherPhoto,
+        merchant: voucher.merchant.name,
+        merchantPhoto: voucher.merchant.merchantPhoto,
+        redeemTime: transaction.time
       }
     });
   }
