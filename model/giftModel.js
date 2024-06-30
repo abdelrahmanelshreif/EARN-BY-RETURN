@@ -23,7 +23,10 @@ const giftSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    createdAt: Date
+    createdAt:  {
+      type:Date,
+      default: Date.now()
+    }
   },
   /*scema options*/ { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

@@ -76,7 +76,11 @@ const userSchema = new mongoose.Schema(
     },
     verificationCode: {
       type: Number
-    }
+    },
+    createdAt:  {
+      type:Date,
+      default: Date.now()
+    },
   } /*scema options*/,
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

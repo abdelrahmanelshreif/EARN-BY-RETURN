@@ -8,7 +8,11 @@ const merchantSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  logo: { type: String, default: null }
+  logo: { type: String, default: null },
+  createdAt:  {
+    type:Date,
+    default: Date.now()
+  }
 });
 
 const Merchant = mongoose.model('Merchant', merchantSchema);

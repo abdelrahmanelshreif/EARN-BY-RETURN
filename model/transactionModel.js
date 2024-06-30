@@ -30,6 +30,10 @@ const transactionSchema = new mongoose.Schema(
       ref: 'Gift',
       default: null
     },
+    createdAt:  {
+      type:Date,
+      default: Date.now()
+    },
     transactionPoints: Number
   } /*scema options*/,
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }

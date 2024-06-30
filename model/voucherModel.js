@@ -48,7 +48,11 @@ const voucherSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'Merchant',
       required: [true, 'A Voucher must belong to a Merchant!']
-    }
+    },
+    createdAt:  {
+      type:Date,
+      default: Date.now()
+    },
   },
   /*scema options*/ { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
