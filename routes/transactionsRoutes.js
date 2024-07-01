@@ -5,8 +5,8 @@ const authController = require('../controllers/authController');
 const router = express.Router({ mergeParams: true });
 
 router.post('/add-gift', authController.protect, transactionController.addGift);
-router.post(
-  '/useVoucher',
+router.get(
+  '/useVoucher/:VoucherID',
   authController.protect,
   transactionController.redeemVoucher
 );

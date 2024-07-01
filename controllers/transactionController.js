@@ -70,7 +70,7 @@ exports.addGift = catchAsync(async (req, res, next) => {
 });
 exports.redeemVoucher = catchAsync(async (req, res, next) => {
   //getting the voucher code from header
-  const voucherId = req.body.VoucherID;
+  const voucherId = req.params.VoucherID;
   //getting voucher data
   const voucher = await Voucher.findOne({
     _id: voucherId
