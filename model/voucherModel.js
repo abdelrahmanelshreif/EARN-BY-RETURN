@@ -49,10 +49,10 @@ const voucherSchema = new mongoose.Schema(
       ref: 'Merchant',
       required: [true, 'A Voucher must belong to a Merchant!']
     },
-    createdAt:  {
-      type:Date,
+    createdAt: {
+      type: Date,
       default: Date.now()
-    },
+    }
   },
   /*scema options*/ { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
@@ -64,10 +64,10 @@ voucherSchema.pre('save', function(next) {
   this.createdAt = Date.now();
   next();
 });
-voucherSchema.pre(/^find/, function(next) {
-  this.find({ active: { $ne: false } });
-  next();
-});
+// voucherSchema.pre(/^find/, function(next) {
+//   this.find({ active: { $ne: false } });
+//   next();
+// });
 voucherSchema.pre(/^find/, function(next) {
   this.populate({
     path: 'merchant',
