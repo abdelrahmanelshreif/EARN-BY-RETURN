@@ -159,7 +159,8 @@ exports.getCurrentUserTransactions = catchAsync(async (req, res, next) => {
 exports.getOneTransactionById = catchAsync(async (req, res, next) => {
   const transactionId = req.params.TransactionId;
   const transaction = await Transaction.findOne({
-    _id: transactionId
+    _id: transactionId,
+    user: req.user.id
   });
   if (!transaction) {
     return next(new AppError('No Transaction found with this ID.', 404));
@@ -178,6 +179,8 @@ exports.getOneTransactionById = catchAsync(async (req, res, next) => {
     });
   } else if (transaction.voucher) {
     const voucher = await Voucher.findById(transaction.voucher.voucherId);
+    console.log(voucher);
+
     if (!voucher) {
       return next(new AppError('Voucher not found.', 404));
     }
